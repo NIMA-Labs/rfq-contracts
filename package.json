@@ -1,0 +1,41 @@
+{
+  "name": "rfq-contracts",
+  "version": "1.0.0",
+  "description": "",
+  "exports": {
+    ".": "./src/sdk.ts",
+    "./abi": "./src/abi.ts"
+  },
+  "scripts": {
+    "compile": "hardhat compile && wagmi generate",
+    "test": "hardhat test nodejs",
+    "coverage": "yarn test --coverage",
+    "deploy": "tsx ./scripts/deployRfqSettlement.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hardhat": "^3.1.0",
+    "tsx": "^4.21.0"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "viem": "^2.30.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.0.6",
+    "@nomicfoundation/hardhat-ignition-viem": "^3.0.6",
+    "@nomicfoundation/hardhat-keystore": "^3.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.3",
+    "@nomicfoundation/hardhat-node-test-runner": "^3.0.8",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.1",
+    "@nomicfoundation/hardhat-verify": "^3.0.8",
+    "@nomicfoundation/hardhat-viem": "^3.0.0",
+    "@nomicfoundation/hardhat-viem-assertions": "^3.0.4",
+    "@nomicfoundation/ignition-core": "^3.0.6",
+    "@openzeppelin/contracts": "5.4.0",
+    "@wagmi/cli": "^2.8.0",
+    "forge-std": "foundry-rs/forge-std#v1.9.4",
+    "typescript": "~5.8.0",
+    "typescript-config": "workspace:*"
+  }
+}
