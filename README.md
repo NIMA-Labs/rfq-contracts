@@ -4,19 +4,17 @@ This package contains contracts, tests, sdk and utilities for the RFQ settlement
 
 ## Setup and tests
 
-If `$pwd` is this package you can drop `workspace rfq-contracts` from the commands below.
-
 1. `corepack enable`
 
-2. `yarn workspace rfq-contracts install`
+2. `yarn install`
 
-3. `yarn workspace rfq-contracts compile`
+3. `yarn compile`
 
-4. `yarn workspace rfq-contracts test`
+4. `yarn test`
 
-5. `yarn workspace rfq-contracts coverage`
+5. `yarn coverage`
 
-6. `yarn workspace rfq-contracts deploy`
+6. `yarn deploy`
 
 ## SDK
 
