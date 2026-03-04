@@ -2,7 +2,7 @@ import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import hardhatViem from "@nomicfoundation/hardhat-viem";
 import { defineConfig } from "hardhat/config";
 
-const RPC_URL = 'https://evm-rpc.sei-apis.com';
+const RPC_URL = process.env.RPC_URL || 'https://evm-rpc.sei-apis.com';
 
 export default defineConfig({
   plugins: [
