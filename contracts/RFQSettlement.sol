@@ -186,7 +186,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         );
     }
 
-    function _formatMakerPermitData(MakerSignedSwapIntent memory makerSignedSwapIntent) internal view returns (PermitData memory permitData) {
+    function _formatMakerPermitData(MakerSignedSwapIntent calldata makerSignedSwapIntent) internal view returns (PermitData memory permitData) {
         permitData.signer = makerSignedSwapIntent.signatureParams.signer;
         permitData.witness = keccak256(
             abi.encode(MAKER_WITNESS_TYPEHASH, makerSignedSwapIntent.makerSwapIntent)
@@ -206,7 +206,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         });
     }
 
-    function _formatTakerPermitData(TakerSignedSwapIntent memory takerSignedSwapIntent) internal view returns (PermitData memory permitData) {
+    function _formatTakerPermitData(TakerSignedSwapIntent calldata takerSignedSwapIntent) internal view returns (PermitData memory permitData) {
         permitData.signer = takerSignedSwapIntent.signatureParams.signer;
         permitData.witness = keccak256(
             abi.encode(TAKER_WITNESS_TYPEHASH, takerSignedSwapIntent.takerSwapIntent)
