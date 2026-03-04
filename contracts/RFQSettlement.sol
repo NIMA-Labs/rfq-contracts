@@ -17,7 +17,8 @@ import {
     MAKER_WITNESS_TYPEHASH,
     TAKER_WITNESS_TYPE_STRING,
     TAKER_WITNESS_TYPEHASH,
-    PIPS
+    PIPS,
+    MAX_FEE_PIPS
 } from "./Constants.sol";
 import {
     PermitData,
@@ -40,7 +41,6 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
 
     event RFQSettled(bytes32 indexed frontendReferral, address feeToken, uint256 feeAmount, RFQParams rfqParams);
 
-    uint256 public constant MAX_FEE_PIPS = 1_00_00;
     IPermit2 public immutable permit2;
     IWETH9 public immutable weth9;
     address public feeTreasury;
