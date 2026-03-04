@@ -29,6 +29,11 @@ import {
     RFQParams
 } from "./Common.sol";
 
+/// @title RFQ Settlement
+/// @notice Settles RFQ trades using Permit2 gasless token approvals.
+/// @dev Standard ERC20 only, fee-on-transfer tokens not supported.
+/// @dev Fee is rounded down making zero fee amount possible by design.
+/// @dev Fee is enforced via amount diff in intents, rfqParams.feePips is used for off-chain analytics.
 contract RFQSettlement is Ownable2Step, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -72,7 +77,8 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         return _address;
     }
 
-    /// @notice withdraw accidental donations
+    /// @notice Withdraws accidental donations.
+    /// @dev INTENTIONALLY PERMISSIONLESS - caller identity is not a protocol concern.
     function rescueTokens(address token, address to) external nonReentrant {
         uint256 amount;
         if (address(0) == token) {
@@ -85,6 +91,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         emit TokensRescued(token, to, amount);
     }
 
+    /// @notice Executes swap between maker and taker.
     function settleRFQ(RFQParams calldata rfqParams) external nonReentrant {
         MakerSignedSwapIntent calldata makerSignedSwapIntent = rfqParams.makerSignedSwapIntent;
         TakerSignedSwapIntent calldata takerSignedSwapIntent = rfqParams.takerSignedSwapIntent;
@@ -138,7 +145,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         );
     }
 
-    /// @dev needed for native token unwrap
+    /// @dev Needed for native token unwrap.
     receive() external payable {
         if (!_reentrancyGuardEntered()) {
             revert NoValueDonations();
@@ -164,7 +171,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         bool unwrap,
         address recipient
     ) internal {
-        /// @dev fees can amount to 0
+        /// @dev Fees can amount to zero.
         if (amount != 0) {
             if (unwrap && address(weth9) == token) {
                 weth9.withdraw(amount);
