@@ -80,7 +80,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
             _valueTransfer(to, amount);
         } else {
             amount = IERC20(token).balanceOf(address(this));
-            IERC20(token).safeTransfer(to, amount);
+            _tokenTransfer(token, to, amount);
         }
         emit TokensRescued(token, to, amount);
     }
@@ -153,6 +153,11 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
         }
     }
 
+    function _tokenTransfer(address token, address to, uint256 amount) internal {
+        _validateAddress(to);
+        IERC20(token).safeTransfer(to, amount);
+    }
+
     function _handleOutflow(
         address token,
         uint256 amount,
@@ -165,7 +170,7 @@ contract RFQSettlement is Ownable2Step, ReentrancyGuard {
                 weth9.withdraw(amount);
                 _valueTransfer(recipient, amount);
             } else {
-                IERC20(token).safeTransfer(recipient, amount);
+                _tokenTransfer(token, recipient, amount);
             }
         }
     }
