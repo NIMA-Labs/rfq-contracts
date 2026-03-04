@@ -41,6 +41,8 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
     error ValueTransferFailed();
 
     event RFQSettled(bytes32 indexed frontendReferral, address feeToken, uint256 feeAmount, RFQParams rfqParams);
+    event FeeTreasuryUpdated(address oldFeeTreasury, address newFeeTreasury);
+    event TokensRescued(address token, address to, uint256 amount);
 
     IPermit2 public immutable permit2;
     IWETH9 public immutable weth9;
@@ -58,7 +60,9 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
     }
 
     function setFeeTreasury(address _feeTreasury) external onlyOwner {
+        address oldFeeTreasury = feeTreasury;
         feeTreasury = _validateAddress(_feeTreasury);
+        emit FeeTreasuryUpdated(oldFeeTreasury, _feeTreasury);
     }
 
     function _validateAddress(address _address) internal pure returns (address) {
@@ -70,11 +74,15 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
 
     /// @notice withdraw accidental donations
     function rescueTokens(address token, address to) external nonReentrant {
+        uint256 amount;
         if (address(0) == token) {
-            _valueTransfer(to, address(this).balance);
+            amount = address(this).balance;
+            _valueTransfer(to, amount);
         } else {
-            IERC20(token).safeTransfer(to, IERC20(token).balanceOf(address(this)));
+            amount = IERC20(token).balanceOf(address(this));
+            IERC20(token).safeTransfer(to, amount);
         }
+        emit TokensRescued(token, to, amount);
     }
 
     function settleRFQ(RFQParams calldata rfqParams) external nonReentrant {
