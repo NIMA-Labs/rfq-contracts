@@ -38,6 +38,7 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
     error RFQInvalidToken();
     error RFQInvalidAmount();
     error RFQInvalidFeePips();
+    error ValueTransferFailed();
 
     event RFQSettled(bytes32 indexed frontendReferral, address feeToken, uint256 feeAmount, RFQParams rfqParams);
 
@@ -70,7 +71,7 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
     /// @notice withdraw accidental donations
     function rescueTokens(address token, address to) external nonReentrant {
         if (address(0) == token) {
-            payable(to).transfer(address(this).balance);
+            _valueTransfer(to, address(this).balance);
         } else {
             IERC20(token).safeTransfer(to, IERC20(token).balanceOf(address(this)));
         }
@@ -136,6 +137,14 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
         }
     }
 
+    function _valueTransfer(address to, uint256 amount) internal {
+        _validateAddress(to);
+        (bool success,) = payable(to).call{value: amount}("");
+        if (!success) {
+            revert ValueTransferFailed();
+        }
+    }
+
     function _handleOutflow(
         address token,
         uint256 amount,
@@ -146,7 +155,7 @@ contract RFQSettlement is Ownable, ReentrancyGuard {
         if (amount != 0) {
             if (unwrap && address(weth9) == token) {
                 weth9.withdraw(amount);
-                payable(recipient).transfer(amount);
+                _valueTransfer(recipient, amount);
             } else {
                 IERC20(token).safeTransfer(recipient, amount);
             }
