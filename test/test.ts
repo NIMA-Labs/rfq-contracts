@@ -212,6 +212,16 @@ describe('RFQSettlement test', function () {
       feePips,
     );
   });
+  it('...should update fee treasury', async function () {
+    await walletClient.writeContract({
+      chain: null,
+      account: ownerAccount,
+      abi: rfqSettlementAbi,
+      address: rfqSettlement,
+      functionName: 'setFeeTreasury',
+      args: [ownerAccount.address],
+    });
+  });
   it('...should withdraw token donations', async function () {
     {
       const donationAmount = 1n;
@@ -254,6 +264,30 @@ describe('RFQSettlement test', function () {
           unsigned.address,
         ],
       });
+    }
+  });
+  it('...should revert on bricked value recipient', async function () {
+    {
+      const donationAmount = 1n;
+      const donationToken = zeroAddress;
+      await testClient.setBalance({
+        address: rfqSettlement,
+        value: donationAmount,
+      });
+      await revertWithCustomError(walletClient.writeContract({
+        chain: null,
+        account: unsigned,
+        abi: rfqSettlementAbi,
+        address: rfqSettlement,
+        functionName: 'rescueTokens',
+        args: [
+          donationToken,
+          quoteToken,
+        ],
+      }),
+        rfqSettlementAbi,
+        'ValueTransferFailed',
+      );
     }
   });
   it('...should revert on invalid signature', async function () {
