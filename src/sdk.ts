@@ -266,11 +266,15 @@ export async function settleRfq(
     }],
   });
   const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
-  const { topics, data } = parseEventLogs({
+  const settledLog = parseEventLogs({
     abi: rfqSettlementAbi,
     logs: receipt.logs,
     eventName: 'RFQSettled',
   })[0];
+  if (!settledLog) {
+    throw new Error('RFQSettled event not found in transaction receipt');
+  }
+  const { topics, data } = settledLog;
   const decodedRfqSettledEventArgs = decodeEventLog({
     abi: rfqSettlementAbi,
     eventName: 'RFQSettled',
